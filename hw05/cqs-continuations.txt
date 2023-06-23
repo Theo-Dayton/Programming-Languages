@@ -1,0 +1,239 @@
+Reading comprehension for continuations
+------------------------------------------------
+*Download* and edit this file, `cqs-continuations.txt`, to answer the questions
+below.  Once you've edited the file, submit it by uploading it to the
+homework server and running command `submit105-cqs`.
+
+ 1. Revisit the definition of values in figure 2.1 on page 93.
+    Next, study the definition of the predefined function `all?` in 
+    section 2.8.3, which starts on page 131.  Like many
+    higher-order functions, `all?` has a subtle contract: it is
+    permissible to call `(all? p? xs)` if and only if there exists a
+    set $A$ such that following are true:
+    
+      - Parameter `p?` is a function that accepts one argument, which
+        must be a member of $A$.  Then `p?` returns a Boolean.
+        
+      - Parameter `xs` is in *LIST(A)*.  That is, `xs` is a list of
+        values, and every element of `xs` is a member of $A$.
+        
+    In other words, `xs` must be a list of values, each of which may
+    be passed to `p?`.
+    
+    With this contract in mind, answer these questions:
+    
+    (a) Write a value that is never permissible as the second,
+        `xs` argument to `all?`, no matter what `p?` is:
+
+        > An association list, since p? accepts only one argument
+
+    (b) Write a value *made with `cons`* that is never permissible as
+        the second, `xs` argument to `all?`, no matter what `p?` is:
+
+        > (cons #t '('() '(1 'test #f)))
+
+    (c) Write a value that may or may not be permissible as the
+        second, `xs` argument to `all?`, depending on what `p?` is.
+        Your value should be *permissible* if `p?` is `number?`, but
+        *impermissible* if `p?` is `prime?`:
+
+        > A value that is not a number, for example '('test). Will return false 
+        for 'number?', but will be impermissible for 'prime?'
+
+    (An impermissible call might or might not result in a checked
+    run-time error.)
+
+
+
+ 2. Study the description of function `list-of?` in problem **L** in
+    the homework, and also the hints for that problem.  Suppose you
+    are given a predicate `even?` whose contract says it accepts a
+    number and returns a Boolean saying if the number is even.  The
+    following call to `list-of?` is a contract violation:
+
+        (list-of? even? '(1 2 3 oopsie))
+        
+    Explain how `list-of?`'s contract is violated, and assign blame to
+    one of the two arguments: the first or the second:
+    
+    > The second list, because even? cannot be applied to 'oopsie
+
+    Now, assume that you are given a predicate `prime-number?`, which
+    accepts *any* value and returns a Boolean saying whether the value
+    is both a number and prime.  For each value of `xs` that you
+    listed in question 1, answer whether passing the value to
+    `list-of?`, along with the predicate `prime-number?`, violates
+    `list-of?`'s contract---and if not, what result `list-of?` should
+    return.
+    
+    (a) Does the value you wrote in 1(a) violate the contract?
+
+        > yes
+        
+        If not, what does `(list-of? prime-number? xs)` return?
+
+        > ... possible result ...
+
+    (b) Does the value you wrote in 1(b) violate the contract?
+
+        > yes
+        
+        If not, what does `(list-of? prime-number? xs)` return?
+
+        > ... possible result ...
+        
+    (c) Does the value you wrote in 1(c) violate the contract?
+
+        > no
+        
+        If not, what does `(list-of? prime-number? xs)` return?
+
+        > #f
+
+    _You are ready for problem **L**._
+
+
+
+ 3. Section 2.11.4, which starts on page 153, describes the semantics
+    of the true definition forms.  Use the semantics to answer two
+    questions about the following sequence of definitions:
+
+        (val f (lambda () y))
+        (val y 10)
+        (f)
+
+    We know that evaluating `lambda` in an environment ρ creates a
+    closure using that same ρ. if the definitions above are evaluated
+    in an environment in which `y` ∈ dom ρ, then what is the result of
+    the call to `f`? Pick A, B, or C.
+
+      (A) It returns `10`.
+      (B) An error is raised: `Run-time error: name y not found`.
+      (C) It returns whatever value `y` had before the definitions
+          were evaluated.
+
+    Answer: C
+
+    If the definitions above are evaluated in an environment in which
+    `y` ∉ dom ρ, what is the result of the call to `f`? 
+    Pick either A or B.
+
+      (A) It returns `10`.
+      (B) An error is raised: `Run-time error: name y not found`.
+
+    Answer: B
+
+    *You are ready to start problem 46.*
+
+
+
+ 4. Read the description of Boolean formulas in the section
+    "Representing Boolean formulas" of the homework.  Then revisit the
+    description of μScheme's records in the textbook
+    in section 2.4, which starts on page 109, or in the
+    recitation on higher-order functions.  (Or if you prefer, read
+    section 2.13.6, which starts on page 169, which shows how records
+    are implemented.)  Now assume you are given a formula f₀, 
+    and answer these questions:
+    
+    (a) How, in constant time, do you tell if f₀ has the form `(make-not f)`?
+
+        > (make-not? f₀)
+        
+    (b) How, in constant time, do you tell if f₀ has the form `(make-and fs)`?
+
+        > (make-and? '(f₀))
+
+    (c) How, in constant time, do you tell if f₀ has the form `(make-or fs)`?
+
+        > (make-or? '(f₀))
+
+    *You are ready to start problems L and F.*
+
+
+
+ 5. Read the definition of evaluation in problem E in the homework,
+    including the definition of the environment used by `eval-formula`.
+
+    Each of the following Boolean formulas is evaluated in an
+    environment where `x` is `#t`, `y` is `#f`, and `z` is `#f`.
+    What is the result of evaluating each formula?
+    (For each formula, answer `#t`, "true", `#f`, or "false.")
+
+    (a) $x$, which in μScheme is constructed by `'x`
+
+        > #t
+
+    (b) $¬x$, which in μScheme is constructed by `(make-not 'x)`
+
+        > #f
+
+    (c) $¬y ∧ x$, which in μScheme is constructed by
+         `(make-and (list2 (make-not 'y) 'x))`
+
+        > #t
+
+    (d) $¬x ∨ y ∨ z$, which in μScheme is constructed by
+         `(make-or (list3 (make-not 'x) 'y 'z))`
+
+        > #f
+
+    (e) Formula `(make-not (make-or (list1 'z)))`, which has a
+        tricky `make-or` applied to a list of length 1, and so can't
+        be written using infix notation
+    
+        > #f
+
+    *You are ready to start problem E.*
+
+
+
+ 6. Read about the Boolean-satisfaction problem for CNF formulas
+    in section 2.10.2, which starts on page 140.
+    The rules for satisfaction, which in the third paragraph (just
+    after the CNF grammar), are the same for all Boolean formulas,
+    even those that are not in CNF.
+    
+    For each of the following Boolean formulas, if there is an
+    assignment to `x`, `y`, and `z` that satisfies the formula,
+    write the words "is solved by" and a satisfying assignment.
+    Incomplete assignments are OK.  If there is no satisfying
+    assignment, write the words "has no solution."
+    
+    Examples:
+    
+    $x ∨ y ∨ z$, which in μScheme is constructed by `(make-or '(x y z))`,
+    is solved by `'((x #t))`
+    
+    $x ∧ y ∧ z$, which in μScheme is constructed by `(make-and '(x y z))`,
+    is solved by `'((x #t) (y #t) (z #t))`
+    
+    $x ∧ ¬x$, which in μScheme is constructed by
+    `(make-and (list2 'x (make-not 'x)))`, has no solution
+
+    For each of these formulas, replace the ellipsis with your answer:
+    
+    (a) $(x ∨ ¬x) ∧ y$, which in μScheme is constructed by  
+        `(make-and (list2 (make-or (list2 'x (make-not 'x))) 'y))`,  
+
+        > '((x #f) (y #t))
+
+    
+    (b) $(x ∨ ¬x) ∧ ¬x$, which in μScheme is constructed by  
+        `(make-and (list2 (make-or (list2 'x (make-not 'x))) (make-not 'x)))`,  
+
+        > '(x #f)
+
+    (c) $(x ∨ y ∨ z) ∧ (¬x ∧ x) ∧ (x ∨ ¬y ∨ ¬z)$,
+        which in μScheme is constructed by
+
+            (make-and 
+                (list3 (make-or (list3 'x 'y 'z)) 
+                       (make-and (list2 (make-not 'x) 'x))
+                       (make-or (list3 'x (make-not 'y) (make-not 'z))))))
+
+        > has no solution
+
+
+    *You are ready to start problems S and T.*
+

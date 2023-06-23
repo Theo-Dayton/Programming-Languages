@@ -1,0 +1,128 @@
+Reading comprehension for ML
+------------------------------------------------
+*Download* and edit this file, `cqs-ml.txt`, to answer the questions
+below.  Once you've edited the file, submit it by uploading it to the
+homework server and running command `submit105-cqs`.
+
+ 1. Read section 5.1 of [Harper](http://www.cs.cmu.edu/~rwh/isml/book.pdf) 
+    about tuple types and tuple patterns.  Also look at the list
+    examples in sections 9.1 and 9.2 of Harper.
+
+    Now consider the pattern `(x::y::zs, w)`. For each of the following
+    expressions, tell whether the pattern matches the value denoted. If
+    the pattern matches, say what values are bound to the four variables
+    `x`, `y`, `zs`, and `w`. If it does not match, explain why not.
+
+    (a) `([1, 2, 3], ("CS", 105))`
+    (b) `(("CS", 105), [1, 2, 3])`
+    (c) `([("CS", 105)], (1, 2, 3))`
+    (d) `(["CS", "105"], true)`
+    (e) `([true, false], 2.718281828)`
+
+    Answers here:
+
+    (a) x=1, y=2, zs=3, w=("CS",105)
+
+    (b) No match because first element should be a list
+
+    (c) x = ("CS", 105), y=null, zs=null, w=(1,2,3)
+
+    (d) x="CS", y="105", zs=null, w=true
+
+    (e) x=true, y=false, zs=null, w=2.718281828
+
+
+    _You are starting to be ready to use pattern matching._
+
+
+ 2. Read the descriptions of patterns and example values (steps 3 and 2)
+    in the fourth "[Lesson in Program Design]{link=lessons.pdf}."
+    Look at Table 4.1, including the *Types of parts* column.  Using
+    the ideas you find there, prepare to answer questions about this
+    expression:
+    
+        case f (x, y, z) 
+          of []      => raise Empty
+           | w :: ws => if p w then SOME w else NONE
+
+    You are told that the subexpression `f (x, y, z)` has type
+    `'a list`.  Using that information, give the type of each of these
+    code fragments, which are built from parts of patterns: 
+
+    (a) The type of the pattern `w :: ws`
+
+        → ANSWER: 'a list
+
+    (b) The type of the variable `ws`
+
+        → ANSWER: 'a list
+
+    (c) The type of the expression `SOME w`
+
+        → ANSWER: 'a
+
+    _You are ready to use pattern matching on common ML types._
+
+
+
+ 3. Read the section on unit testing in the [guide to learning
+    ML]{link=learning-ml.pdf}.  Read about infix function names in step 3 
+    of the fourth [lesson on program design]{link=lessons.pdf}.
+    And read the section on [unit testing](#unit-testing) in this homework.
+
+    Now, using the interpreter to be sure your answer is well typed,
+    translate the following _failing_ unit test into ML:
+    
+        (check-expect (foldl + 0 '(1 2 3)) 7)
+    
+    Your translation:
+
+    → Unit.checkExpect With Unit.listString Unit.intString "unit test"
+    (fn () => foldl + 0 '(1 2 3)) 7)
+    7
+
+    _You are ready to write unit tests._
+
+
+ 4. In chapter 5 of *Programming Languages: Build, Prove, and Compare*,
+    study the definition of function `bindList` in chunk 312c.
+    Now show a call to `bindList` that is well typed (passes type
+    checking) but whose evaluation raises the `BindListLength` exception:
+    
+    > bindList ([1,2,3], [4,5,6], emptyEnv)
+    
+    (Hint: keep things simple by passing `emptyEnv` as the third argument.)
+
+    _You are ready to write `zip` and to write environment
+    functions that use exceptions._
+
+
+ 5. "Free" variables are those that are not bound to a value in the
+    current scope. You can find a longer discussion and precise
+    definition in section 5.6 of *Build, Prove, and Compare*, 
+    which starts on page 322. Read the section and identify the
+    free variables of the expressions below.  *Remember that a name
+    occurring in function position can be a free variable.*
+
+     (a) Free variables of `(lambda (x) (lambda (y) (equal? x y)))`
+
+         → equal?
+
+     (b) Free variables of `(lambda (y) (equal? x y))`
+
+         → equal? x
+
+     (c) Free variables of
+
+             (lambda (s1 s2)
+               (if (or (atom? s1) (atom? s2))
+                 (= s1 s2)
+                 (and (equal? (car s1) (car s2))
+                      (equal? (cdr s1) (cdr s2)))))
+
+         → cdr car = equal? atom? or and
+
+    _You are ready to improve the μScheme interpreter._ You may do
+    this with a partner.  You and your partner will turn your answers
+    to parts (a) and (b) into unit tests.
+
