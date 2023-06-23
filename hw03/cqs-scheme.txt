@@ -1,0 +1,179 @@
+Reading Comprehension for Scheme
+================================
+*Download* and edit this file, `cqs-scheme.txt`, to answer the
+questions below. Once you've edited the file, submit it by uploading
+it to the homework server and running command `submit105-cqs`.
+
+ 1. Read Sections 2.1 and 2.2 (the first part of the second lesson) in
+    *Seven Lessons in Program Design* on Canvas.
+    
+    You are tasked with writing a function that consumes a list of
+    numbers:
+    
+    (a) How many cases must you consider?
+
+    Answer: 2
+
+    (b) To tell the cases apart, what condition or conditions will you
+        use in `if` expressions?  (List one fewer condition than cases.)
+
+    Answer: (if (null? xs))
+
+    You are tasked with writing a function that consumes an ordinary
+    S-expression.
+    
+    (c) How many cases must you consider?
+
+        Answer: 3
+
+    (d) To tell the cases apart, what condition or conditions will you
+        use in `if` expressions?  (List one fewer condition than cases.)
+
+        Answer: (if (null? s))
+                (if (atom? s))
+
+    _You are ready to write algebraic laws using Scheme data._
+
+ 2. In the main textbook, review section 2.2 on
+    values, S-expressions, and primitives, and say what is the value
+    of each of the expressions below.
+    If a run-time error would occur, please say so.
+
+        (car '(a b 1 2))  Answer: 'a
+        (cdr '(a b 1 2))  Answer: '(b 1 2)
+        (= 'a 'b)         Answer: #f
+
+    Write your answers as S-expression literals, like `'(a b c)`,
+    `#t`, or `17`.
+
+    _You are on your way to being ready for homework exercises **8**, 
+    **B**, and **C**._
+
+ 3. Also in section 2.2, review
+    the printing primitives.  Now study the example in code chunk 23c, 
+    in which calling primitive `print` causes numbers 4, 5, and 20 to
+    be smushed together.  In order to get 4, 5, and 20 each on a line
+    by itself, what primitive should you call instead?
+
+    Answer: Instead of print, use println
+
+ 4. In *Programming Languages: Build, Prove, and Compare*, review the
+    first few pages of section 2.3, through the end of
+    section 2.3.2, and also section 2.3.6,
+    which starts on page 106. Which of the
+    following expressions evaluates to `#t` for every *list of
+    ordinary S-expressions* `xs`?
+
+        (=      (reverse (reverse xs)) xs)
+        (equal? (reverse (reverse xs)) xs)
+
+    (a) Only the first
+    (b) Only the second
+    (c) Both the first and the second
+    (d) None
+
+    Answer: b
+
+ 5. Read the introduction to algebraic laws in the first page of
+    section 2.5, which starts on page 112.
+    Now say under what circumstances the law `(car (cons x xs)) = x`
+    would be considered *valid*:
+
+    (a) If there is any way to substitute *values* for `x` and `xs` 
+        such that the two sides are equal.
+    (b) If there is any way to substitute *expressions* for `x` and `xs` 
+        such that the two sides are equal.
+    (c) If no matter what *value* is substituted for `x` and what
+        value is substituted for `xs`, the two sides are equal.
+    (d) If no matter what *expression* is substituted for `x` and what
+        list of expressions is substituted for `xs`, the two sides are equal.
+
+    Answer: c
+    
+    _You are now prepared to understand what is being proved 
+    in homework exercise A._
+
+ 6. Algebraic laws are used to express *properties*, not just for
+    program design. Read section 2.3 (another part of the second
+    lesson) in *Seven Lessons in Program Design*
+    and also the first part of section 2.5 in the main
+    textbook, up to and including section 2.5.5.
+
+    Now complete the following laws, each of which should represent a
+    valid property:
+    
+        (find x (bind x v rho))     =  v
+
+        (append xs (append '() ys)) =  (append xs ys)
+        
+        (if p (if p x y) z)         =  (if p x z)
+
+    _You are now prepared for the algebraic laws in homework exercises
+    **A**, **B**, and **C**._
+
+ 7. In *Programming Languages: Build, Prove, and Compare*, read the
+    two laws for `append` (which we will call "append-empty" and
+    "append-cons") on page 101, and then study 
+    the proof in the middle of page 117,
+    which shows that `(append (cons x '()) ys)` equals `(cons x ys)`.
+
+    Now answer this question: how many other *laws* are used in the
+    proof, and what are their names?
+    
+    > Your answer: There are a total of 4 distinct laws. They are:
+    append-empty law
+    length-empty law
+    append-cons law
+    length-cons law
+
+    
+ 8. Read section 2.6, which explains `let` and `let*`.
+    Now answer the questions below:
+
+    (a) What does the `let` expression in the following program evaluate to?
+
+            (val x 3)  (let ([x 4] [y x]) y)
+
+        Your answer: 3
+
+    (b) What does the `let*` expression in the following program evaluate to?
+
+            (val x 3)  (let* ([x 4] [y x]) y)
+
+        Your answer: 4
+
+    (c) What does the `let` expression in the following program evaluate to?
+
+            (val x 3)  (val y 4)  (let ([x y] [y x]) y)
+
+        Your answer: 3
+
+    _You are now ready to program using `let` and `let*`._
+
+ 9. Read section 2.4, which starts on page 109.
+    Imagine that $\mu$Scheme is given the following definition:
+
+        (record 3point [x y z])
+
+    This definition puts five functions into the environment ρ.
+
+      * What are their names?
+
+      Answer:
+      3point-x
+      3point-y
+      3point-z
+      make-3point
+      3point?
+
+      * Which one is the _type predicate_?
+
+      Answer: 3point?
+      
+      * Which one is the _constructor_?
+
+      make-3point
+      
+
+    _You are now mostly ready for homework exercise **E**._
+

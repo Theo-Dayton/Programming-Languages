@@ -1,0 +1,100 @@
+Reading comprehension for Impcore
+=================================
+
+###  Instructions ###
+
+Edit this file, `cqs-impcore.txt`, to answer the questions below. There are
+markers indicating where you should write your answers for each question.
+
+Once you've edited the file, submit it by following the steps outlined on the
+homework spec.
+
+### Readings and Questions ###
+
+Please read pages 17--26 in *Programming Languages: Build, Prove, and Compare*.
+
+1.  What is the value of the following Impcore expression?
+
+        (if (> 3 5) 17 99)
+
+    > 99
+
+2.  Which of the following best describes the syntactic structure of
+    Impcore?
+
+    (a)   An expression can be made with any definition as one of its parts
+    (b)   A definition can be made with any expression as one of its parts
+    (c)   Both of the above
+    (d)   None of the above
+
+    > (b)
+
+3.  Does the following Impcore test pass? Please answer "yes" or "no."
+
+        (check-expect (+ 1 2 3) 6)
+
+    > no
+
+    Assuming `x` is bound to a global variable, does the following
+    Impcore test pass? Again, please answer "yes" or "no."
+
+        (check-expect (set x 1) 1)
+
+    > Yes
+
+In *Seven Lessons in Program Design*, on Canvas, read the
+Introduction and Lesson 1.
+
+4.  I show you a recursive function `f` that takes one argument, 
+    a natural number `n`.  The structure of `n`, and therefore the
+    internal structure of `f`, are based on the Peano proof system from
+    the handout.
+
+    (a) What are the different ways `n` can be formed?
+
+    > 'n' can be be in the form "0", or "(m + 1)", where m is a natural number
+    
+    (b) In the implementation of `f`, what Impcore code should `f` use to
+        test the form of `n`?
+
+    > (if = n 0). If true then n has the form "0"
+    
+    (c) For which forms of `n` do you expect `f` to make a recursive call? This
+        should match one of the forms you provided in part (a).
+
+    > 'f' will make a recursive call when the form of n is (m + 1)
+
+    (d) When a recursive call is made, what value is passed as the argument?
+        Write this value as an Impcore expression.
+
+    > The value passed as the argument is m. Impcore expression: (f m)
+    
+Read the section titled "What is a contract?" in the Course Style Guidelines
+on Canvas.
+
+5.  Suppose I write a contract for a `power` function that says, "this
+    function multiplies $x$ by itself $n$ times."  According to our
+    expectations, is this a good contract or a bad contract?
+    Please answer "good" or "bad."
+
+    > bad
+
+6.  In *Seven Lessons in Program Design*, just before the end of
+    Lesson 1, you will find a section on "Complete process examples."
+    This section suggests that the `factorial` function---but not the
+    `power` function---could be submitted without a contract.
+    
+    (a) Why would it be OK to submit the `factorial` function without
+        a contract?  For an idea, look at the "Exemplary" column in
+        the "Documentation" section of the general coding rubric.
+
+    > Yes, because the contract is trivial, the name of the function is enough
+    to function as a contract itself
+
+    (b) Why doesn't the same argument apply to the `power` function?
+        For an idea, check the design lesson.
+
+    > Because the contract for the 'power' function is not trivial.
+      It has to specify what each parameter does.
+
+You're all done!
