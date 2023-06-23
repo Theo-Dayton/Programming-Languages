@@ -1,0 +1,247 @@
+;;;;;;;;;;;;;; define class method `withAll:` for arrays
+
+((Array class) addSelector:withMethod: 'withAll:
+  (compiled-method (sequence) [locals a i]
+    (set a (self new: (sequence size)))
+    (set i 0)
+    (sequence do: [block (x) (a at:put: i x) (set i (i + 1))])
+    a))
+
+(class Natural ;; page 678
+   [subclass-of Magnitude]
+   ;; instance variables left as an exercise step 4
+
+   ;; private class method
+   (class-method base () (set base 8) base) ;; steps 2 and 27
+
+   ;; private methods: internal consistency checking
+   (method invariant () (self leftAsExercise))         ;;; step 8
+   (method validated ()                                ;;; step 9
+      ((self invariant) ifFalse: {(self printrep)
+                                  (self error: 'invariant-violated)})
+      self)
+
+   ;;;; step 5 ;;;;
+   (method digit: (i)   
+      (self leftAsExercise))
+   (method digit:put: (i d) 
+      (self leftAsExercise))
+   (method makeEmpty: (deg)
+      (self leftAsExercise))
+   (method doDigitIndices: (aBlock)
+      (self leftAsExercise))
+   (method degree ()
+      (self leftAsExercise))
+   (method trim ()
+      (self leftAsExercise))
+   (method digits: (ds)
+      (self leftAsExercise))
+
+   (method printrep ()
+     (self doDigitIndices:
+        [block (i)
+           ((i isZero) ifFalse: {(', print)})
+           ((self digit: ((self degree) - i)) print)]))
+
+   (method * (aNatural) (self leftAsExercise)) ;;; steps 25 and 26
+   (method isZero  () (self leftAsExercise)) ;;; steps 10 and 11
+
+   (class-method fromSmall: (anInteger)  ;;; step 12
+      (self leftAsExercise)) 
+
+   ;;;; ADDITION ;;;;
+
+   (method + (aNatural) (self leftAsExercise))  ;;; steps 15 and 16
+
+   ;;;; DIVISION AND DECIMALS ;;;;
+
+
+   (method sdivmod:with: (n aBlock) (self leftAsExercise)) ;;; steps 20 and 21
+   (method setSdiv:remainder (n) (self leftAsExercise))
+   (method sdiv: (n) (self sdivmod:with: n [block (q r) q]))
+   (method smod: (n) (self sdivmod:with: n [block (q r) r]))
+
+   (method decimal () (self leftAsExercise))  ;;; step 22
+   (method print ()      ;;; steps 23 and 24:
+      (self printrep))   ;;; change to print-with-decimal
+   (method print-with-decimal ()
+      ((self decimal) do: [block (x) (x print)]))
+
+   ;;;; COMPARISON ;;;;
+   ;; obligations inherited from Magnitude (steps 14 and 19)
+   (method = (aNatural) (self leftAsExercise))
+   (method < (aNatural) (self leftAsExercise))
+
+   ;;;; SUBTRACTION ;;;;
+
+   (method subtract:withDifference:ifNegative: (aNatural diffBlock exnBlock)
+      (self leftAsExercise)) ;;; step 17
+   ;; remaining arithmetic is built on key arithmetic
+   (method - (aNatural) ;;; step 18
+      (self subtract:withDifference:ifNegative:
+            aNatural
+            [block (x) x]
+            {(self error: 'Natural-subtraction-went-negative)}))
+
+)
+
+
+; For testing naturals
+(class DebugNat
+  [subclass-of Object]
+  [ivars nat] ; a natural number
+  (class-method of: (aNat) ((self new) init: aNat))
+  (method init: (n) (set nat n) self) ; private
+  (method print () (nat printrep))
+)
+
+
+; additional methods for naturals just for testing
+(Natural addSelector:withMethod: 'squared
+  (compiled-method () (self * self)))
+(Natural addSelector:withMethod: 'coerce:
+  (compiled-method (i) (Natural fromSmall: i)))
+(Natural addSelector:withMethod: 'raisedToInteger:
+  (Number compiledMethodAt: 'raisedToInteger:))
+
+
+
+
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; Put your unit tests for natural numbers here
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(class LargeInteger ;; page 677
+  [subclass-of Integer]
+  [ivars magnitude]
+
+  (class-method withMagnitude: (aNatural)
+      ((self new) magnitude: aNatural))
+  (method magnitude: (aNatural) ; private, for initialization
+      (set magnitude aNatural)
+      self)
+
+  (method magnitude () magnitude)
+
+  (class-method fromSmall: (anInteger) ;;; step 16
+     ((anInteger isNegative) ifTrue:ifFalse: 
+        {(((self fromSmall: 1) + (self fromSmall: ((anInteger + 1) negated)))
+          negated)}
+        {((LargePositiveInteger new) magnitude: 
+                 (Natural fromSmall: anInteger))}))
+
+  ;; methods implemented for you 
+
+  (method asLargeInteger () self)
+  (method = (anInteger) ((self - anInteger)     isZero))
+  (method < (anInteger) ((self - anInteger) isNegative))
+
+  (method div: (n) (self sdiv: n))
+  (method mod: (n) (self smod: n))
+
+  (method sdiv: (n) (self subclassResponsibility))
+
+  ;; methods you will implement
+
+  (method isZero () (self subclassResponsibility)) ;;; step 4
+
+  ;;;; steps 5, 6, and 10 ;;;;
+
+  (method isNegative         () (self subclassResponsibility))
+  (method isNonnegative      () (self subclassResponsibility))
+  (method isStrictlyPositive () (self subclassResponsibility))
+
+  ;; private methods, page 676
+  ;;    (you will implement each one in each subclass)
+
+  ;;;; steps 12 and 13 ;;;;
+
+  (method multiplyBySmallInteger: (aSmallInteger)
+    (self subclassResponsibility))
+
+  (method multiplyByLargePositiveInteger: (aLargePositiveInteger)
+    (self subclassResponsibility))
+
+  (method multiplyByLargeNegativeInteger: (aLargeNegativeInteger)
+    (self subclassResponsibility))
+
+  ;;;; steps 14 and 15 ;;;;
+
+  (method addSmallIntegerTo: (aSmallInteger) 
+    (self subclassResponsibility))
+
+  (method addLargePositiveIntegerTo: (aLargePositiveInteger)
+    (self subclassResponsibility))
+
+  (method addLargeNegativeIntegerTo: (aLargeNegativeInteger)
+    (self subclassResponsibility))
+
+  ;;;; steps 17 and 18 (public method `smod:`) ;;;;
+
+  (method smod: (n) (self leftAsExercise)) 
+
+  ;; diagnostics
+  (method invariant () (magnitude isKindOf: Natural))
+  (method validated ()
+     ((self invariant) ifFalse: {(self error: 'invariant-violated)})
+     self)
+
+)
+
+
+(class LargePositiveInteger
+  [subclass-of LargeInteger]
+
+  ;; short division (already implemented for you)
+  (method sdiv: (anInteger)
+    ((anInteger isStrictlyPositive) ifTrue:ifFalse: 
+       {(LargePositiveInteger withMagnitude:  (magnitude sdiv: anInteger))}
+       {((((self - (LargeInteger fromSmall: anInteger)) -
+                                                  (LargeInteger fromSmall: 1))
+             sdiv: (anInteger negated))
+            negated)}))
+
+  ;; your chosen invariant for this subclass
+  (method invariant ()  ;;; step 3
+       ((super invariant) &
+        (self leftAsExercise)))
+
+  ;; you add other methods here
+
+)
+
+(class LargeNegativeInteger
+  [subclass-of LargeInteger]
+
+  ;; short division (already implemented for you)
+  (method sdiv: (anInteger)
+    ((self negated) sdiv: (anInteger negated)))
+
+  ;; your chosen invariant for this subclass
+  (method invariant ()    ;;; step 3
+       ((super invariant) &
+        (self leftAsExercise)))
+
+  ;; you add other methods here
+)
+
+
+
+;;;;;;;; for testing addition with overflow
+
+(Integer addSelector:withMethod: 'times10
+  ;; answers the receiver times 10, using only addition
+  (compiled-method () [locals two four]
+     (set two (self + self))
+     (set four (two + two))
+     ((four + four) + two)))
+
+        (check-print (((10101 times10) times10) times10) 10101000)
+
+
+

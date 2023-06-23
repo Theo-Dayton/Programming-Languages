@@ -1,0 +1,235 @@
+Reading comprehension for SML modules
+-------------------------------------
+*Download* and edit this file, `cqs-sml.txt`, to answer the questions
+below.  Once you've edited the file, submit it by uploading it to the
+homework server and running command `submit105-cqs`.
+
+ 1. Using one of the sources in the [ML learning guide]{link=learning-ml.pdf},
+    read about structures, signatures, and matching.  Then answer
+    questions about the structure and signature below.
+
+    The following structure contains definitions that should be
+    familiar from the [ML homework](hw-ml.html) and from code you may
+    have seen in the course interpreters:
+
+        structure ExposedEnv = struct
+          type name   = string
+          type 'a env = (name * 'a) list
+          exception NotFound of name
+          val emptyEnv = []
+
+          fun lookup (name, [])              = raise NotFound name
+            | lookup (name, (x, v) :: pairs) =
+                if x = name then v else lookup (name, pairs)
+
+          fun bindVar (name, value, env) = (name, value) :: env
+        end
+
+    Here is a signature:
+
+        signature ENV = sig
+          type name = string
+          type 'a env
+          val emptyEnv : 'a env
+          val lookup   : name * 'a env -> 'a
+          val bindVar  : name * 'a * 'a env -> 'a env
+        end
+
+    Answer these questions:
+
+    (a) Does the structure match the signature?  That is, if we write
+
+            structure Env :> ENV = ExposedEnv
+
+        does the resulting code typecheck?  Please answer yes or no.
+
+      Yes
+
+    (b) Does the signature expose enough information for us to write
+        the following function?  Please answer yes or no.
+
+            fun extendEnv (names, vals, rho) =
+              ListPair.foldrEq Env.bindVar rho (names, vals)
+
+      No
+
+
+
+    (c) Does the signature expose enough information for us to write
+        the following function?  Please answer yes or no.
+
+            fun isBound (name, rho) = (Env.lookup (name,rho) ; true) 
+                                      handle Env.NotFound _ => false
+
+      Yes
+
+
+
+    (d) If in part (b) or part (c), if it is not possible to write the
+        function given, change the signature to make it possible.
+        If necessary, please copy, paste, and edit your new version in
+        here:
+
+
+
+
+
+
+    (e) Suppose I change the `ENV` signature to make the `name` type
+        abstract, so the code reads
+
+            signature ENV' = sig
+              type name
+              type 'a env
+              val emptyEnv : 'a env
+              val lookup   : name * 'a env -> 'a
+              val bindVar  : name * 'a * 'a env -> 'a env
+            end
+            structure Env' :> ENV' = ExposedEnv
+
+        The new structure `Env'`, sealed with signature `ENV'`, is useless.
+        Please explain *why* it is useless:
+
+        Since the 'name' type is abstract, its functions lookup and bindvar
+        become useless when the name parameter is not bound to a single type
+
+
+    *You now have the basic ideas needed to understand what is being
+    asked of you in this assignment.*
+
+
+ 2. An ML _functor_ is a function that operates on the module level.
+    Think of it as a "module in waiting" or a "module builder";
+    a software engineer would call it a "generic module."
+    A functor's _formal_ parameters, if any, are specified by a
+    _sequence of declarations_, and its _actual_ parameters are given
+    by a _sequence of definitions_.  A functor's _result_ is a
+    structure.
+    
+    Read about functors in Harper, as recommended in the ML learning
+    guide.  Then read about structure matching in section 24 of
+    Tofte's "Tips for Computer Scientists on Standard ML."
+    Then answer the questions below.
+    
+    (a) On page 183, Harper defines a functor `DictFun` which takes
+        one parameter: a structure `K` matching signature `ORDERED`.
+        A dictionary is implemented using a binary tree.  Suppose
+        instead you want to implement a dictionary using a hash table.
+        So you define a new functor `HashDictFun`, and it expects one
+        parameter: a structure `K` with signature `HASHABLE`:
+
+            functor HashDictFun(structure K : HASHABLE) :>
+                      MUTABLE_DICT where type Key.t = K.t
+              =
+            struct
+              ... imagine your beautiful hash table here ...
+            end
+
+        The new signature `HASHABLE` is analogous to Harper's
+        signature `ORDERED`: it defines a key type `t`, plus every thing
+        we need to know *about keys* to build a generic hash table with
+        elements of type `t`.
+
+        Fill in the complete definition of signature `HASHABLE` here:
+        
+            signature HASHABLE = sig
+              structure Key : HASABLE = K
+              datatype 'a hashDict =
+                Empty |
+                Node of 'a hashDict * Key.t * 'a * 'a hashDict
+                val empty = Empty
+              ... fill in declarations here ...
+              ... only info about keys; no operations on tables...
+            end
+            
+
+    (b) For each component of your `HASHABLE` signature, whether it is
+        a type component or a value component, say what you expect it
+        to be used for in functor `HashDictFun`.
+        _Write only English_, not code:
+
+        > datatype 'a will be used to store a polymorphic type of values into
+          the table
+
+          K will be used to give unique keys to values in the table
+
+
+    (c) Suppose you have a structure `IntHash` that matches signature
+
+            HASHABLE where type t = int
+            
+        Now suppose you apply function `DictFun`, from Harper's
+        chapter, to structure `IntHash`.  This scenario is like the 
+        examples on the bottom of page 184; I'm suggesting you try
+        
+            structure HIntDict = DictFun (structure K = IntHash).
+
+        What will the ML compiler say?  Will it reject this
+        application of DictFun or accept it?
+
+          - If the compiler would reject the application, say one
+            *specific* thing the compiler would complain about:
+            
+            > IntHash is HASHABLE, but DictFun would complain it is not ORDERED
+            
+          - If the compiler would accept the application, explain why
+            the compiler would be OK with it even though the functor expects
+            module `K` with signature `ORDERED` and you are giving it
+            module `K` with signature `HASHABLE`:
+
+            > HASHABLE is analogous  to ORDERED, that is, that they both define
+            a key type t, as well as the same functions on this type
+
+    *You now understand functors well enough to use them in exercise I.*
+
+ 3. Read about "signature refinement or specialization" in the
+    [ML learning guide]{link=learning-ml.pdf}.  Now,
+
+    (a) In Harper's `DictFun` functor, explain what is going
+        on with the `where type` syntax.
+
+        The where type sintax is making sure that the key type is of type K.t
+        when it is passed as an argument to the functor. While 'a is of 
+        an abstract type, K.t is not because it uses functions from a specific
+        type
+
+    (b) Explain what would go wrong if Harper wrote a definition
+        _without_ `where type`:
+
+            functor DictFun (structure K : ORDERED) :> DICT
+              =
+            struct
+              ...
+            end
+
+        Then if someone instatiated DictFun so that Key.t is not of type K.t,
+        then when using a function such as Key.lt, then the program would
+        crash since the function lt does not exist for every type
+
+    *You now know enough to write the functor in exercise A.*
+
+ 4. Exercise A asks you to build an Abstract Game Solver.  The solver
+    implements an algorithm that searches for the next move.
+    
+      - Read about the Minimax algorithm on Wikipedia.
+        (https://en.wikipedia.org/wiki/ 
+        Minimax#Minimax_algorithm_with_alternate_moves)
+
+      - Read about the "pick up the last stick" game that you can
+        implement in the homework.
+        http://www.cs.tufts.edu/comp/105/games.html
+
+    Using *N* = 4, write out each step of how the minimax algorithm
+    solves "pick up the last stick."  (There is recursion involved.
+    You will find it helpful to draw a tree on the whiteboard, but
+    don't bother trying to format your tree for submission.  Just
+    write text saying what happens at each step.)
+
+    The minimax algorithm will minimize the value of the player's moves While
+    minimizing the value of the opponent's moves. To do this, the algorithm
+    will recurse through the nodes of a tree representing the moves for each
+    player. the algorithm will evaluate the maximum and minimum values of
+    nodes and choose the move with the largest value.
+
+    *You are now ready for the Abstract Game Solver.*
+

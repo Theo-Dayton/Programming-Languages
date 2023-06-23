@@ -1,0 +1,400 @@
+Reading comprehension for Smalltalk
+-------------------------------------
+*Download* and edit this file, `cqs-small.txt`, to answer the questions
+below.  Once you've edited the file, submit it by uploading it to the
+homework server and running command `submit105-cqs`.
+
+ 1. *Receivers, arguments, and message names.*
+    Read the first eleven pages of chapter 10, through
+    the end of section 10.1.4.
+    Now examine these expressions from the definition of class
+    `Picture`, in figure 10.4 on page 627:
+
+        (shapes add: aShape)
+        (shape drawOn: aCanvas)
+        (shapes do: [block (shape) (shape drawOn: aCanvas)])
+
+    In each expression, please identify the *receiver*, the
+    *argument*, and the *message name*:
+
+    > In `(shapes add: aShape)`,
+    >
+    >   - The receiver is shapes
+    >   - The argument is aShape
+    >   - The message name is add:
+
+    > In `(shape drawOn: aCanvas)`,
+    >
+    >   - The receiver is shape
+    >   - The argument is aCanvas
+    >   - The message name is drawOn:
+
+    > In `(shapes do: [block (shape) (shape drawOn: aCanvas)])`,
+    >
+    >   - The receiver is shapes
+    >   - The argument is [block (shape) (shape drawOn: aCanvas)]
+    >   - The message name is do:
+
+
+    _You can now start to read code examples._
+
+ 2. *Colons in message names*.
+    Now move on to class `TikzCanvas`, which is described in 
+    Figures 10.5 and 10.6 on page 628.
+    In both the protocol and the implementation, method `startDrawing`
+    has no colon in the name, method `drawPolygon:` has one colon in
+    the name, and method `drawEllipseAt:width:height:` has three colons 
+    in the name.
+
+      - What, if anything, does the number of colons have to do with
+        *receivers*? 
+
+        Your answer: Nothing
+
+      - What, if anything, does the number of colons have to do with
+        *arguments*? 
+
+        Your answer: The number of colons is dictated by the number of
+        arguments
+
+    If you need to, review the presentation in section 10.1.1 
+    on "Objects and Messages," which shows messages sent to shapes.
+
+
+    _You now know what a message's name tells you about how to use it._
+
+
+ 3. *Class protocols and instance protocols.*
+    Every *message* is part of some *protocol*.  As example messages,
+    study the transcript in code chunks 622b and 622c, which
+    puts three shapes into a picture and then draws the picture.
+
+    (a) Of the message names used in the transcript, which ones are
+        part of the _class_ protocol for `Picture`?
+
+        empty
+        
+
+        Which message names are part of the _instance_ protocol for
+        `Picture`?
+
+        add:
+
+    
+        Which message names are part of the _class_ protocol for
+        `TikzCanvas`?
+
+        new
+        
+
+        Which message names are part of the _instance_ protocol for
+        `TikzCanvas`?
+
+        renderUsing:
+
+
+    (b) In general, what do you do with messages in a _class_
+        protocol, and how does that differ from what you do with
+        messages in an _instance_ protocol?
+
+
+    _You now know what you can do with each kind of message described
+    in the chapter._
+
+ 4. *Dynamic dispatch, part I: A toy class*.
+    For the mechanisms of message send and dynamic dispatch, read
+    section 10.3.4, which starts on page 641.  Using the class definitions
+    in that section, message `m1` is sent to an object of class `C`.
+    What method *definitions* are dispatched to, in what order?
+
+    Please edit this answer to put in the correct methods and classes:
+
+      - Dispatch to method m1 on class B
+      - Dispatch to method m2 on class C
+        ...
+
+    _You are starting to understand the key mechanism behind all of
+    object-oriented programming._
+
+ 5. *Dynamic dispatch, part II: Conditionals? What conditionals?*
+     Read section 10.5 in its entirety. It spans pages 662 to 664.
+
+     Now study this transcript:
+
+        -> ('hello isNil)
+        <False>
+        -> (nil isNil)
+        <True>
+        -> ('hello class)
+        <class Symbol>
+        -> (('hello class) superclass)
+        <class Object>
+        -> (nil class)
+        <class UndefinedObject>
+        -> ((nil class) superclass)
+        <class Object>
+
+    Answer these two questions:
+
+    (a) Explain how it is possible that the `isNil` method can be
+        implemented without an equality test and without any explicit
+        conditional test (like an `if`).  Your explanation should
+        include a statement of what messages are sent to what objects
+        and what method definition each message dispatches to.
+
+        Because the isNil method is implemented so that it calls the isNil
+        method of the reciever. For nil, calling isNil on nill will call the
+        isNil method for the nil class.
+
+
+    (b) Explain _why_ it is desirable to implement object-oriented
+        code without explicit conditional tests, and indeed, without
+        ever asking an object, "how were you formed?"
+
+        Because it allows the programmer to extend classes, which make up 
+        everything in OOP code, easily.
+
+
+    _You are starting to learn how to work effectively in a world
+    where we don't interrogate objects to see how they were formed or
+    what class they are._
+
+ 6. *Dynamic dispatch, part III: Number classes.*
+    Familiarize yourself with the protocols for magnitudes and
+    numbers, as described in section 10.4.6, which starts on page 658.
+    Now turn to section 10.7, which starts on page 670, and examine
+    the key methods of class `Number`, as well as the 
+    implementation of class `Fraction` (page 673).
+    Part of class `Fraction` is relegated to the Supplement, but the
+    only thing you need from there is this implementation of method
+    `negated` on class `Fraction`:    
+     
+        (method negated () ((Fraction new) setNum:den: (num negated) den))
+
+    Now, demonstrate your understanding of dynamic dispatch by
+    explaining what messages are sent when fractions are subtracted.  
+    For example, what messages are sent when we evaluate
+
+        ((1 / 2) - (1 / 3)) ?
+
+    The computation dispatches messages to instance methods of classes
+    `Fraction`, `Number`, and `SmallInteger`, as well as a class method of
+    class Fraction.  We are interested in only *some* of those
+    dispatches---ones that meet *both* of these criteria:
+
+      - The message is sent from a method defined on class `Fraction`
+        or class `Number`.
+
+      - The message is received by an _instance_ of class `Fraction` or
+        class `Number`.
+
+    These criteria rule out *class* methods of class `Fraction`,
+    messages sent to `SmallInteger`, and so on.
+
+    Starting with what happens when message `-` (minus) is sent to an
+    instance of `Fraction`, please identify only the interesting
+    dispatches:
+
+        Message   Sent from method     Sent to object      Method defined
+                  defined on class     of class            on class
+
+        -          (anywhere)          Fraction            Number
+
+        negated    Number              Fraction            Fraction
+
+        new        (anywhere)          Fraction            Fraction
+
+                         ... fill in the ? marks ...
+
+                  ... and complete the rest of this table ...
+
+
+    _You are starting to learn how a class can have some of its work
+    done for it by its superclass._
+
+ 7. *Dynamic dispatch, part IV: Messages to `self` and `super`.*
+    Now study the *class* method `new` defined on class `List`, which
+    appears in section 10.8, which starts on page 681.
+    The definition sends message `new` to `super`.  (Keep in mind:
+    because `new` is a *class* method, both `super` and `self` stand
+    for the class, not for any instance.)
+
+    (a) When *class* method `new` is executed, what three messages
+        are sent by the method body, in what order?  (If you like, you
+        can use the message tracer described under ["Diagnostic
+        technique"](#tracing) below, but it is probably easier just 
+        to look at the source code.)
+
+         1) ListSentinel new
+
+         2) sentinel: (ListSentinel new)
+
+         3) (super new)
+
+    (b) What does each of the three message sends accomplish?
+
+         1) Creates a new ListSentinel instance 
+
+         2) Sets its argument (the new ListSentinel) to sentinel
+
+         3) Calls the new method of the supercall object, in this case
+            SequenceableCollection
+
+
+    (c) If we change `new`'s definition so instead of `(super new)` it 
+        says `(self new)`, which of the following scenarios best describes
+        how the changed program behaves?
+
+        A.  The `new` message will be dispatched to class `List`.
+            The same method will run again, and the computation will
+            not terminate.
+
+        B.  The `new` message will be dispatched to a different class,
+            and the reply to the `new` message will leave the sentinel
+            pointing to the wrong value.
+
+        C.  Nothing will change; in this example, there's no
+            difference between `(super new)` and `(self new)`.
+
+        Your answer: The best description is labeled with letter A
+
+
+    _You are learning how to use `super` to initialize objects._
+
+ 8. *Design of the numeric classes.*
+    Read about coercion in section 10.4.6 on page 658.
+    Look at the last part of the instance protocol for `Number` on page 659,
+    which shows the contracts of methods  `coerce:`, `asInteger`, `asFraction`,
+    and `asFloat`.  If you are unsure, look at the implementations 
+    of these methods on class `Integer`, on page 678.
+
+    Answer the two questions (a) and (b).  *Write no English.*
+
+    (a) Supposing `x` is a variable that holds a number---possibly a
+        floating-point number.  In C or C++, you can cast its value to
+        `int` by writing `(int) x`.  In uSmalltalk, what code do you write?
+
+        > asInteger x
+
+    (b) Now suppose you have a uSmalltalk variable `y`, which also
+        holds a number.  You want to add `x` and `y`, but the contract
+        of the `+` message says that it can be used only when
+        `x` and `y` have the same representation (both integers, both
+        floats, etcetera).  *Without* interrogating either `x` or `y`
+        to ask what class it is, how can you add them safely?  What
+        code do you write?
+
+        > (asFloat x) + (asFloat y)
+
+    You are ready to implement mixed arithmetic, with coercions, in exercise 39.
+
+
+    _You are now ready to implement *all* of the operations on
+    numbers, not just the ones that are familiar from C or C++._
+
+
+ 9. *Abstract classes in principle.*
+    In section 10.13.1, which starts on page 716 ("Key words and phrases"),
+    you will find a short definition of "abstract class."  What is the
+    *purpose* of an abstract class?  Pick one of the responses below.
+
+    (a) To hide the representation of instances so programmers can
+        change internal details without affecting client code
+
+    (b) To define methods that other classes inherit, so that
+        subclasses get useful default methods
+
+    (c) The same as the purpose of a regular class: to define an abstraction
+
+    Your answer: B
+
+
+    _You now know what abstract classes are supposed to do, so that
+    when you tackle the homework, you can take advantage of abstract
+    classes like `Magnitude`, `Number`, and `Integer`._
+
+10. *Abstract classes in practice: magnitudes and numbers.*
+    Your natural-number class will inherit from abstract class
+    `Magnitude`, and your large-integer code will inherit from
+    `Magnitude` and from `Number`, which is also an abstract class.
+
+    (a) Study the implementation of class `Magnitude` (starts on page 664).
+        List all the methods that are “subclass responsibility”:
+
+            Your answer: = and <
+
+        These are methods that you must implement in both your
+        `Natural` class and your large-integer classes.
+
+    (b) On page S431 of the Supplement to *Build, Prove, and Compare*,
+        you will find the definition of class Number, which I will
+        save you the trouble of looking up:
+
+            (class Number
+                [subclass-of Magnitude]  ; abstract class
+                ;;;;;;; basic Number protocol
+                (method +   (aNumber)     (self subclassResponsibility))
+                (method *   (aNumber)     (self subclassResponsibility))
+                (method negated    ()     (self subclassResponsibility))
+                (method reciprocal ()     (self subclassResponsibility))
+                
+                (method asInteger  ()     (self subclassResponsibility))
+                (method asFraction ()     (self subclassResponsibility))
+                (method asFloat    ()     (self subclassResponsibility))
+                (method coerce: (aNumber) (self subclassResponsibility))
+                <<other methods of class [[Number]]>>
+            )
+
+        Your large-integer classes will be subclasses of `Number`.
+        How many of the eight `subclassResponsibility` methods will
+        you have to implement in those classes?
+
+            Your answer: +, *, negated, reciprocal
+
+        (Two of these methods, `+` and `*`, must also be implemented
+        in class `Natural`.)
+
+    _You now understand in detail what operations your large integers
+    must support._
+
+11. *Double Dispatch*.
+    Read section 10.7, which starts on page 670.  And read the section
+    "laws for multiple dispatch" in the 7th lesson on program design
+    (["Program Design with Objects"]{link=lessons.pdf}).  
+
+    Now, of the methods on class `Number` listed in the previous
+    question, list each one that needs to know *either* of the
+    following facts about its *argument* (not its receiver):
+
+      - Whether the argument is large or small
+      - If the argument is large, whether it is "positive" or "negative"
+
+    For example, `+` is such a method.
+
+    (a) Please list all such methods here:
+
+        Your answer: +, *
+
+
+    (b) The methods in part (a) are exactly the ones that require
+        double dispatch.  The implementation of each such method sends
+        a message to its *argument*, and the exact message depends on
+        the class of the *receiver*.  
+
+        Assume that the receiver is a `LargePositiveInteger`.  Please
+        say, for each method in part (a), what message the method
+        implementation sends to the argument.
+
+        Your answer:
+
+        > Method `+` sends `addLargePositiveIntegerTo:` to the argument  
+        > Method `*` sends `multiplyByLargePositiveInteger` to the argument
+        > 
+        
+
+    _You are ready to implement arithmetic on large integers (exercise 38)._
+
+
+
+
+

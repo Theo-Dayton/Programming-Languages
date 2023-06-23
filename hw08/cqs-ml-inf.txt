@@ -1,0 +1,307 @@
+Reading comprehension for ML type inference
+-------------------------------------------
+*Download* and edit this file, `cqs-ml-inf.txt`, to answer the questions
+below.  Once you've edited the file, submit it by uploading it to the
+homework server and running command `submit105-cqs`.
+
+ 1. Read sections 7.3.2 and 7.4.1, which start on page 417 and page 418, 
+    respectively.  
+    We have seen the symbols ρ, τ, and σ before, but not used exactly in
+    this way. 
+
+    Here is a list of semantic and type-related concepts you have seen
+    written using single symbols:
+
+      - an expression
+      - a name
+      - a location
+      - a value
+      - a type
+      - a type scheme (new in this chapter)
+      - a mapping from names to locations
+      - a mapping from names to values
+      - a mapping from names to types
+      - a mapping from names to type schemes (new in this chapter)
+
+    There are lots of concepts and only so many symbols to go around.
+    Please identify, from the preceding list, what each symbol stands
+    for in the theory of nano-ML:
+
+    (a) ρ
+
+    A mapping from names to values
+
+
+    (b) τ
+
+    A type
+
+
+    (c) σ
+
+    A type scheme
+    
+
+    (d) Γ
+
+    A mapping from names to type schemes
+    
+
+    And finally, 
+
+    (e) Say briefly what, in nano-ML, is the difference between τ and σ:
+
+    τ represents a single type while σ quantifies over type variables
+
+
+    _You are preparing for exercise 19._
+
+
+
+ 2. Read the first two pages of section 7.4.3, which explain
+    "substitutions" and "instances." 
+
+    (a) Yes or no: does the substitution `(α → sym) ∘ (β → bool) ∘ (γ → int)`
+        replace type variable `α` with type `sym`?
+
+        Yes
+
+
+    (b) Yes or no: does the substitution `(α → sym) ∘ (β → bool) ∘ (γ → int)`
+        replace type variable `β` with type `bool`?
+
+        Yes
+
+
+    (c) Yes or no: does the substitution `(α → sym) ∘ (β → bool) ∘ (γ → int)`
+        leave the type `γ list` unchanged?
+
+        No
+
+
+    (d) Which of the following are *instances* of the polymorphic type
+        scheme `∀α . α list → int`?  For each one, please indicate
+        whether it is an instance of the type scheme (True) or whether
+        it is not an instance of the type scheme (False).
+        
+        `int list`   True or False
+
+        True
+
+        `int list list`  True or False
+
+        True
+
+        `int list list → int`  True or False
+
+        False
+
+        `int * int list → list`  True or False
+
+        False
+
+    _You have a foundation on which to build for exercises 18 and C._
+
+
+
+ 3. Read the first page of section 7.5.2 (page 430), which shows the form of
+    a constraint.   Then skip to the first page of section 7.5.3 (page 438),
+    which explains how to apply a substitution to a constraint.
+
+
+    We start with a substitution θ and a constraint $C$:
+
+    > $θ$ = `(α₁ ↦ int)`
+    >
+    > $C$ = `α₁ ~ α₂ /\ α₂ ~ α₃ list /\ α₄ ~ α₃ list list`.
+
+    Now define $C' = θ(C)$.
+    
+    (a) Write $C'$:
+
+    $C$ = `int ~ α₂ /\ α₂ ~ α₃ list /\ α₄ ~ α₃ list list`.
+
+
+    
+    (b) Does $C'$ have a solution?  Answer yes or no.
+
+    Yes
+
+
+    Now define $C''$ as the result of applying substitution `(α₂ ↦ int)` to $C$.
+
+    (c) Write $C''$:
+
+    $C''$ = `α₁ ~ int /\ int ~ α₃ list /\ α₄ ~ α₃ list list`.
+
+
+    (d) Does $C''$ have a solution?  Answer yes or no.
+
+    No
+
+
+
+    _You are getting ready for exercises 18 and C._
+
+
+
+ 4. Now read all of section 7.5.3, which explains how to solve constraints.
+
+    To demonstrate your understanding, reason about solving these four
+    constraints:
+
+    > `C₁ = α ~ int`
+    >
+    > `C₂ = α ~ bool`
+    >
+    > `C₃ = C₁ /\ C₂`
+    >
+    > `C₄ = α₁ ~ α₂ /\ α₂ list ~ α₁`
+
+    (a) Write a substitution `θ₁` that solves constraint `C₁`:
+       
+    `θ₁` = α -> int
+
+
+    (b) Write a substitution `θ₂` that solves constraint `C₂`:
+
+    `θ₂` = α -> bool
+
+
+    (c) Does the composition `θ₂ ∘ θ₁` solve constraint `C₃ = C₁ /\ C₂`?
+        Answer yes or no.
+
+    No
+
+
+    (d) Can constraint `C₃` be solved? Answer yes or no.
+
+    No
+
+
+    (e) Can constraint `C₄` be solved? Answer yes or no.
+
+    No
+
+
+    _You are ready for excercises 18 and C._
+
+
+ 5. Read the first two pages of section 7.5.2, which starts on page 430.
+    Pay special attention to the Apply rule.  Also read the footnote
+    at the bottom of page 26 of *Seven Lessons in Program Design*.
+    
+    Now consider type inference for the following expression e:
+    
+        (f 3 #t)
+        
+    For this question, assume the following:
+
+      - Expression `3` has type `int`, with a trivial constraint.
+      - Expression `#t` has type `bool`, with a trivial constraint.
+      - Trivial constraints can be ignored.
+      - Every type variable *except* `'a`, `'b`, and `'c` is "fresh."
+    
+    Answer both parts:
+    
+    (a) Assume that `f` is bound in Γ to the type scheme `∀.'a × 'b → 'c.`
+        (The `∀` is supposed to be empty.) 
+        In judgment C, Γ ⊢ e : τ, what does the type checker output for τ?
+
+        'd
+
+
+        And what does the type checker output for C?
+
+         'a × 'b → 'c ~ int x bool -> 'd
+
+
+    (b) Assume that `f` is bound in Γ to the type scheme `∀.'a`.
+        In judgment C, Γ ⊢ e : τ, what does the type checker output for τ?
+
+        'd
+
+
+        And what does the type checker output for C?
+
+        'a ~ int x bool -> 'd
+
+
+    _You are ready for the easy parts of exercise 19._
+
+
+ 6. Read the paragraphs that describe the nondeterministic typing rules 
+    for `lambda` and for "Milner's Let", which you will find on page 424.
+    Especially, read the small paragraph following the `lambda` rule.
+
+    Now look at the `val` definition of `too-poly` in code chunk 424.
+    The right-hand side of the `val` definition is a `lambda`
+    expression with the name `empty-list` playing the role of `x₁`.
+    
+    (a) The rule for `lambda` says that we can pick any type `τ₁` for
+        `empty-list`.  After we've chosen `τ₁`, what is the *type
+        scheme* to which `empty-list` (playing `x₁`) is bound in the
+        extended environment which is used to check $e$?
+        (Hint: this type scheme comes from the `lambda` rule,
+        as per the discussion in the small paragraph, and it is
+        *different* from the type scheme of the `empty-list` that
+        appears in the top-level `val` binding.)
+
+        ∀.'a τ₁ ~ 'a
+        
+
+    (b) Given that the rule for `lambda` says that we can pick any
+        type `τ₁` for `empty-list`, why can't we pick a `τ₁` that makes
+        the `lambda` expression type-check?  Put the word YES next to the
+        best explanation:
+
+          - Parameter `empty-list` has to have type `(forall ('a)
+            (list 'a))`, but `τ₁` is not a `forall` type.
+
+          - Parameter `empty-list` has type `τ₁` = `(list 'a)`, which is
+            not the same as `(list bool)`.
+
+          - Parameter `empty-list` can have any type `τ₁` but no `τ₁` can
+            be equivalent to both `(list int)` and `(list bool)`.
+
+            YES
+
+          - Parameter `empty-list` has type `τ₁` = `(list bool)`, which
+            is not the same as `(list int)`.
+
+          - Parameter `empty-list` has type `τ₁` = `(list int)`, which
+            is not the same as `(list bool)`.
+
+
+
+    _You are ready for exercise 8 and for one of the hard
+    parts of exercise 19._
+
+ 7. Now look at the definition of `not-too-poly` in code chunk 425.
+    The right-hand side is an example of Milner's `let` with
+    `empty-list` playing the role of $x$, the literal `'()` playing
+    the role of $e'$, and an application of `pair` playing the role
+    of $e$.  Suppose that Γ ⊢ `'()` : β list, where β is a type variable
+    that does not appear anywhere in Γ.  That is to say, the literal
+    `'()` is given the type β list, which is playing the role of τ'.
+
+    (a) If τ' is β list, what are its free type variables?
+
+    ftv(τ')
+
+
+    (b) What set plays the role of `{ α₁, ..., αₙ }`, which is ftv(τ')-ftv(Γ)?
+
+    The set of free type variables in t' that are not also free type variables
+    in Γ
+    
+
+    (c) What is the *type scheme* to which `empty-list` (playing x) is 
+        bound in the extended environment which is used to check $e$?
+
+        ∀.'a (τ₁ ... τn) ~ 'a
+
+
+    _You are ready for all of exercise 19._
+
+
